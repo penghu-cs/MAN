@@ -81,9 +81,7 @@ class Solver(object):
 
     def build_model(self):
         """Builds a generator and a discriminator."""
-        # from model import Image_CNN_list, Text_CNN_list, D
         from model import Dense_Net, Text_CNN_list, Image_CNN_Net, Half_MNIST_CNN_Net, MNIST_CNN_Net, SAD_CNN_Net, D
-        # self.Common = Common(self.bits, self.output_shape)
         self.Gs = []
         for i in range(self.n_view):
             if i in self.text_views:
@@ -102,9 +100,6 @@ class Solver(object):
         self.D = D(dim=self.output_shape, view=self.n_view)
 
         get_grad_params = lambda model: [x for x in model.parameters() if x.requires_grad]
-        # g_params = list(self.A2C.parameters()) + list(self.B2C.parameters()) + (list(self.Classifier.parameters() if self.classifer else []))
-        # g_params = get_grad_params(self.A2C) + get_grad_params(self.B2C) + get_grad_params(self.Common)
-        # g_params = get_grad_params(self.A2C) + get_grad_params(self.B2C)
         g_params = [params for G in self.Gs for params in get_grad_params(G)]
         d_params = get_grad_params(self.D)
 
@@ -185,12 +180,8 @@ class Solver(object):
             test_features_list.append([test_features_list_tmp, self.test_labels])
         for epoch in range(self.epochs):
             print(('Epoch %d/%d') % (epoch + 1, self.epochs))
-            # rand_idx = np.arange(self.train_data[0].shape[0])
-            # np.random.shuffle(rand_idx)
             rand_idx_list = self.shuffleInx()
 
-            # rand_idx1 = np.arange(self.train_data[0].shape[0])
-            # np.random.shuffle(rand_idx1)
             batch_count = int(np.ceil(min(self.len_list) / float(self.batch_size)))
 
             k = 0
@@ -204,13 +195,7 @@ class Solver(object):
                     train_x.append(self.to_var(torch.tensor(self.train_data[i][idx])))
                     if len(self.train_labels[i].shape) == 1 or self.train_labels[i].shape[1] == 1:
                         train_y.append(self.to_var(torch.tensor(self.train_labels[i][idx])))
-
-                        # one_hot = torch.FloatTensor(idx.shape[0], self.num_classes).float()
-                        # one_hot.zero_()
-                        # one_hot.scatter_(1, torch.tensor(self.train_labels[i][idx].reshape([-1, 1])), 1)
-                        # train_y.append(self.to_var(one_hot))
                     else:
-                        # train_y.append(self.to_var(torch.tensor((self.train_labels[i][idx] / self.train_labels[i][idx].sum(1).astype('float32').reshape([-1, 1])).astype('float32'))))
                         train_y.append(self.to_var(torch.tensor(self.train_labels[i][idx].astype('float32'))))
 
                     one_hot = torch.FloatTensor(idx.shape[0], self.n_view).float()
@@ -222,12 +207,7 @@ class Solver(object):
                     one_hot.zero_()
                     one_hot.scatter_(1, torch.tensor([i] * train_y[i].shape[0]).reshape([-1, 1]), 1)
                     view_y_fake.append(self.to_var((one_hot != 1).float() / (self.n_view - 1)))
-                    # view_y_fake.append(self.to_var(torch.ones([train_y[i].shape[0], self.n_view]) / self.n_view))
 
-                    # train_dist_map.append(self.to_var(torch.tensor(dist_map[v][idx].T[idx].T)))
-
-                # fake_1_labels = self.to_var(torch.Tensor([self.num_classes] * train_x[0].shape[0]).long())
-                # fake_2_labels = self.to_var(torch.Tensor([self.num_classes] * train_x[1].shape[0]).long())
                 # ---------------------
                 #  Train Discriminator
                 # ---------------------
@@ -235,17 +215,8 @@ class Solver(object):
                 d_loss = 0.
                 for v in range(self.n_view):
                     gc = self.Gs[v](train_x[v])
-                    # class_out, view_out = self.D(gc[-1])
-                    # d_loss += self.criterion_class(class_out, train_y[v]) + self.criterion_view(view_out, view_y[v])
                     view_out = self.D(gc[-1])
                     d_loss += self.criterion_view(view_out, view_y[v])
-
-                # reg_loss = 0.
-                # for param in self.D.parameters():
-                #     reg_loss += param.norm(2)
-                # d_loss += reg_loss * 1e-5
-
-
                 d_loss.backward()
                 self.d_optimizer.step()
 
@@ -258,14 +229,10 @@ class Solver(object):
                 for v in range(self.n_view):
                     gc = self.Gs[v](train_x[v])
                     gc_list.append(gc[-1])
-                    # gc_list.append(gc[-1] / ((gc[-1] ** 2).sum(1)).view([-1, 1]))
-                    # class_out, view_out = self.D(gc[-1])
                     view_out = self.D(gc[-1])
-                    # g_loss += self.criterion_class(class_out, train_y[v]) + self.criterion_view(view_out, view_y_fake[v]) # - self.criterion_view(view_out, view_y[v])
-                    g_loss += self.criterion_view(view_out, view_y_fake[v]) # - self.criterion_view(view_out, view_y[v])
+                    g_loss += self.criterion_view(view_out, view_y_fake[v])
                 fisher_loss = utils.fisher_loss(torch.cat(gc_list), torch.cat(train_y), num_classes=self.num_classes, eta=self.eta)
                 loss = g_loss + fisher_loss * self.fisher_beta
-
                 loss.backward()
                 self.g_optimizer.step()
 
@@ -329,9 +296,7 @@ class Solver(object):
                 elif batch_idx == batch_count - 1:
                     utils.show_progressbar([batch_idx, batch_count], mean_D_loss=np.mean(mean_d_loss), mean_G_loss=np.mean(mean_g_loss), mean_f_loss=np.mean(mean_f_loss))
                 else:
-                    # utils.show_progressbar([batch_idx, batch_count], D_loss=d_loss[0], D_acc=d_loss[1], G_loss=g_loss)
                     utils.show_progressbar([batch_idx, batch_count], D_loss=d_loss, G_loss=g_loss, F_loss=fisher_loss)
-                    # utils.show_progressbar([batch_idx, batch_count], G_loss=loss)
                 k += 1
         if self.just_valid:
             print("best_epoch: %d" % best_epoch + ",\t valid best resutls:" + self.view_result(best_valid_results))
@@ -339,38 +304,3 @@ class Solver(object):
         else:
             print("best_epoch: %d" % best_epoch + ",\t valid best resutls:" + self.view_result(best_valid_results) + ",\t best resutls:" + self.view_result(best_results))
             return best_valid_results, best_results
-
-    def sample_images(self, epoch, train_x, train_y):
-        r, c = 8, 8
-        import matplotlib.pyplot as plt
-        train_x = [train_x[0][0: r * c], train_x[1][0: r * c]]
-        fake_train_x = [self.to_data(self.C2A(self.B2C(train_x[1][0: r * c]))),
-                        self.to_data(self.C2B(self.A2C(train_x[0][0: r * c])))]
-        train_x = [self.to_data(train_x[0]), self.to_data(train_x[1])]
-        fig, axs = plt.subplots(r * self.n_view, c * 2)
-        for i in range(r):
-            for j in range(c):
-                for v in range(self.n_view):
-                    if v == 0:
-                        try:
-                            img = train_x[0][i * c + j].reshape([self.image_size, self.image_size])
-                            axs[v * r + i, j * 2].imshow(img, cmap='gray')
-                        except Exception:
-                            pass
-
-                        img = fake_train_x[1][i * c + j].reshape([self.image_size, self.image_size])
-                        axs[v * r + i, j * 2 + 1].imshow(img, cmap='gray')
-
-                    else:
-                        img = train_x[1][i * c + j].reshape([self.image_size, self.image_size])
-                        axs[v * r + i, j * 2].imshow(img, cmap='gray')
-
-                        img = fake_train_x[0][i * c + j].reshape([self.image_size, self.image_size])
-                        axs[v * r + i, j * 2 + 1].imshow(img, cmap='gray')
-                    axs[v * r + i, j * 2].set_xticks([])
-                    axs[v * r + i, j * 2].set_yticks([])
-                    axs[v * r + i, j * 2 + 1].set_xticks([])
-                    axs[v * r + i, j * 2 + 1].set_yticks([])
-
-        fig.savefig(self.image_path + ("%d.png" % epoch))
-        plt.close()
