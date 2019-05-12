@@ -4,8 +4,6 @@ cudnn.enabled = False
 import scipy.io as sio
 
 def main(config):
-    # svhn_loader, mnist_loader = get_loader(config)
-
     svhn_loader, mnist_loader = None, None
     from MAN import Solver
     solver = Solver(config, svhn_loader, mnist_loader)
