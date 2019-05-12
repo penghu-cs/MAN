@@ -81,32 +81,19 @@ class Solver(object):
 
     def build_model(self):
         """Builds a generator and a discriminator."""
-        from model import Dense_Net, Text_CNN_list, Image_CNN_Net, Half_MNIST_CNN_Net, MNIST_CNN_Net, SAD_CNN_Net, D
+        from model import Dense_Net, Text_CNN_list, D
         self.Gs = []
         for i in range(self.n_view):
             if i in self.text_views:
                 self.Gs.append(Text_CNN_list(mode=self.mode, word_dim=self.word_dim, vocab_size=self.vocab_size, out_dim=self.output_shape, filters=self.filters, filter_num=self.filter_num, dropout_prob=self.dropout_prob, wv_matrix=self.wv_matrix))
-            elif self.train_data[i].shape[1] == 3:
-                self.Gs.append(Image_CNN_Net(output_shape=self.output_shape, in_channel=self.train_data[i].shape[1]))
-            elif self.train_data[i].shape[-1] == 14:
-                self.Gs.append(Half_MNIST_CNN_Net(output_shape=self.output_shape, in_channel=self.train_data[i].shape[1]))
-            elif self.train_data[i].shape[-1] == 28:
-                self.Gs.append(MNIST_CNN_Net(output_shape=self.output_shape, in_channel=self.train_data[i].shape[1]))
-            elif self.train_data[i].shape[-1] == 13:
-                self.Gs.append(SAD_CNN_Net(output_shape=self.output_shape, in_channel=self.train_data[i].shape[1]))
             else:
                 self.Gs.append(Dense_Net(input_dim=self.input_shape[i], out_dim=self.output_shape))
-
         self.D = D(dim=self.output_shape, view=self.n_view)
-
         get_grad_params = lambda model: [x for x in model.parameters() if x.requires_grad]
         g_params = [params for G in self.Gs for params in get_grad_params(G)]
         d_params = get_grad_params(self.D)
-
         self.g_optimizer = optim.Adam(g_params, self.lr, [self.beta1, self.beta2])
         self.d_optimizer = optim.Adam(d_params, self.lr, [self.beta1, self.beta2])
-
-
         if torch.cuda.is_available():
             for G in self.Gs:
                 G.cuda()
