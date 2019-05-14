@@ -10,5 +10,19 @@
 <!--## Result
 ![Result](pascal_sentence_results.png)-->
 ## Result
-<img src="pascal_sentence_results.png" width="600"/>
+<img src="pascal_sentence_results.png" width="700"/>
 
+## Citing MAN
+If you find MAN useful in your research, please consider citing:
+```
+@article{HU2019,
+    title = "Multimodal adversarial network for cross-modal retrieval",
+    journal = "Knowledge-Based Systems",
+    year = "2019",
+    issn = "0950-7051",
+    doi = "https://doi.org/10.1016/j.knosys.2019.05.017",
+    url = "http://www.sciencedirect.com/science/article/pii/S0950705119302230",
+    author = "Peng Hu and Dezhong Peng and Xu Wang and Yong Xiang",
+    keywords = "Cross-modal retrieval, Latent common space, Adversarial learning, Multimodal discriminant analysis, Multimodal representation learning",
+}
+```
