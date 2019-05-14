@@ -10,5 +10,5 @@
 <!--## Result
 ![Result](pascal_sentence_results.png)-->
 ## Result
-<img src="fig/pascal_sentence_results.png" width="600"/>
+<img src="pascal_sentence_results.png" width="600"/>
 
