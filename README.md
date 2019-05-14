@@ -1,5 +1,5 @@
 # MAN
-Multimodal Adversarial Network for Cross-modal Retrieval
+[Multimodal Adversarial Network for Cross-modal Retrieval](https://www.sciencedirect.com/science/article/pii/S0950705119302230)
 
 ## Abstract
   Cross-modal retrieval aims to retrieve the pertinent samples across different modalities, which is  important in 
