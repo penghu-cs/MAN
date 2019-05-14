@@ -7,6 +7,8 @@
 ## Framework
 ![SSAH](framework.png)
 
+<!--## Result
+![Result](pascal_sentence_results.png)-->
 ## Result
-![Result](pascal_sentence_results.png)
+<img src="fig/pascal_sentence_results.png" width="600"/>
 
