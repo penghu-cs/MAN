@@ -15,14 +15,13 @@ Cross-modal retrieval aims to retrieve the pertinent samples across different mo
 ## Citing MAN
 If you find MAN useful in your research, please consider citing:
 ```
-@article{HU2019,
-    title = "Multimodal adversarial network for cross-modal retrieval",
-    journal = "Knowledge-Based Systems",
-    year = "2019",
-    issn = "0950-7051",
-    doi = "https://doi.org/10.1016/j.knosys.2019.05.017",
-    url = "http://www.sciencedirect.com/science/article/pii/S0950705119302230",
-    author = "Peng Hu and Dezhong Peng and Xu Wang and Yong Xiang",
-    keywords = "Cross-modal retrieval, Latent common space, Adversarial learning, Multimodal discriminant analysis, Multimodal representation learning",
+@article{hu2019multimodal,
+  title={Multimodal adversarial network for cross-modal retrieval},
+  author={Hu, Peng and Peng, Dezhong and Wang, Xu and Xiang, Yong},
+  journal={Knowledge-Based Systems},
+  volume={180},
+  pages={38--50},
+  year={2019},
+  publisher={Elsevier}
 }
 ```
