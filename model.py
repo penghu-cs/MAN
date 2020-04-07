@@ -60,8 +60,6 @@ class Text_CNN_list(nn.Module):
             return [out1]
 
 class Dense_Net(nn.Module):
-    """Generator for transfering from svhn to mnist"""
-
     def __init__(self, input_dim=28*28, out_dim=20, mid=1024, one_layer=False):
         super(Dense_Net, self).__init__()
         self.one_layer = one_layer
@@ -80,7 +78,6 @@ class Dense_Net(nn.Module):
             return [out1]
 
 class D(nn.Module):
-    """Discriminator for mnist."""
     def __init__(self, dim=20, view=2):
         super(D, self).__init__()
         self.dim = dim
